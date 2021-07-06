@@ -9,7 +9,6 @@ app.use(cors());
 
 const apps = require('./playstore.js')
 
-
 //sort	'rating' or 'app'	sort the list by either rating or app, 
 //any other value results in an error, if no value provided do not 
 //perform a sort.
@@ -28,18 +27,21 @@ app.get('/apps', (req, res) => {
                 .send('Sort must be one of app or rating')
         }
     }
-    let theseapps = apps.map(app => app);
+    let results = apps.map(app => app);
     let results = apps.filter(app => app.app);
     if(sort) {
+        if(!['Action', 'Puzzle', 'Strategy', 'Casual', 'Arcade', 'Card'].includes(sort)) {
+            return res 
+                .status(400)
+                .send('Genre must be one of Action, Puzzle, Strategy, Casual, Arcade, or Card')
+        }
         results.sort((a, b) => {
             return a[sort] > b[sort] ? 1 : a[sort] < b[sort] ? -1 : 0;
         });
     }
-    res.json(theseapps);
+    res.json(results);
 });
 
-app.listen(8000, () => {
-    console.log('Express server is listening on port 8000!')
-})
+module.exports = app;
 
 //By default return the complete list of apps in the array.
